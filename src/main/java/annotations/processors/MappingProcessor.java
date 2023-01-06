@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MappingProcessor {
@@ -22,37 +21,29 @@ public class MappingProcessor {
             LOGGER.error("EntityMapping annotation was not found");
             throw new EntityMappingNotFoundException();
         }
-
-        // Connect to the database
+        Field[] fields = entityClass.getDeclaredFields();
+        StringBuilder queryString = new StringBuilder("CREATE TABLE " + entityMapping.tableName() + " (");
+        String primaryKeyName = "";
+        for (Field field : fields) {
+            IdMapping idMapping = field.getAnnotation(IdMapping.class);
+            if (idMapping != null) {
+                primaryKeyName = idMapping.idName();
+                queryString.append(primaryKeyName + " " + idMapping.idType() + ", ");
+                continue;
+            }
+            ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
+            if (columnMapping == null) {
+                continue;
+            }
+            queryString.append(columnMapping.columnName() + " " + columnMapping.columnType() + ", ");
+        }
+        queryString.append("PRIMARY KEY (" + primaryKeyName + "),");
+        queryString.deleteCharAt(queryString.length() - 1);
+        queryString.append(")");
         try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "password")) {
-            StringBuilder queryString = new StringBuilder("CREATE TABLE " + entityMapping.tableName() + " (");
-
-            Field[] fields = entityClass.getDeclaredFields();
-            for (Field field : fields) {
-                ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
-                if (columnMapping == null) {
-                    continue;
-                }
-                queryString.append(columnMapping.columnName() + " " + columnMapping.columnType() + ",");
-            }
-
-            for (Field field : fields) {
-                // Check if the field is annotated with @IdMapping
-                IdMapping idMapping = field.getAnnotation(IdMapping.class);
-                if (idMapping == null) {
-                    continue;
-                }
-
-                queryString.append("PRIMARY KEY (" + idMapping + "),");
-            }
-
-            // Remove the last comma and add the closing parenthesis
-            queryString.deleteCharAt(queryString.length() - 1);
-            queryString.append(")");
-
-            PreparedStatement preparedStatement = connection.prepareStatement(queryString.toString());
-            preparedStatement.execute();
+            connection.prepareStatement(queryString.toString()).execute();
         } catch (SQLException e) {
+            e.printStackTrace();
             LOGGER.error("Error with connecting to Database");
         }
     }
