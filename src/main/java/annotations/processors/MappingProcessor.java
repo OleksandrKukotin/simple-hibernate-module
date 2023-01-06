@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class MappingProcessor {
@@ -29,22 +30,25 @@ public class MappingProcessor {
             if (idMapping != null) {
                 primaryKeyName = idMapping.idName();
                 queryString.append(primaryKeyName + " " + idMapping.idType() + ", ");
-                continue;
+            } else {
+                ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
+                if (columnMapping == null) {
+                    continue;
+                }
+                queryString.append(columnMapping.columnName() + " " + columnMapping.columnType() + ", ");
             }
-            ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
-            if (columnMapping == null) {
-                continue;
-            }
-            queryString.append(columnMapping.columnName() + " " + columnMapping.columnType() + ", ");
         }
-        queryString.append("PRIMARY KEY (" + primaryKeyName + "),");
-        queryString.deleteCharAt(queryString.length() - 1);
+        queryString.append("PRIMARY KEY (" + primaryKeyName + ")");
         queryString.append(")");
+
         try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "password")) {
-            connection.prepareStatement(queryString.toString()).execute();
+            try (PreparedStatement preparedStatement = connection.prepareStatement(queryString.toString())) {
+                preparedStatement.execute();
+            } catch (SQLException e) {
+                LOGGER.error("Processing of the PreparedStatement went wrong. Try to check a generated query in the debugger.");
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
-            LOGGER.error("Error with connecting to Database");
+            LOGGER.error("Error with connecting to Database. Try to check the connection data that is given for DriverManager.getConnection().");
         }
     }
 
