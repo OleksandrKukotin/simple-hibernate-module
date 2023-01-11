@@ -7,20 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class MappingProcessor {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MappingProcessor.class);
+    private final DataTypeMapper dataTypeMapper = new DataTypeMapper();
+    private final ConnectionManager connectionManager = new ConnectionManager();
 
     public void createTable(Class<?> entityClass) {
         EntityMapping entityMapping = entityClass.getAnnotation(EntityMapping.class);
         if (entityMapping == null) {
             LOGGER.error("EntityMapping annotation was not found");
-            throw new EntityMappingNotFoundException();
+            throw new EntityMappingNotFoundException("Entity class must be annotated with @EntityMapping");
         }
         Field[] fields = entityClass.getDeclaredFields();
         StringBuilder queryString = new StringBuilder("CREATE TABLE " + entityMapping.tableName() + " (");
@@ -28,34 +26,25 @@ public class MappingProcessor {
         for (Field field : fields) {
             IdMapping idMapping = field.getAnnotation(IdMapping.class);
             if (idMapping != null) {
-                primaryKeyName = idMapping.idName();
+                primaryKeyName = field.getName();
                 queryString.append(primaryKeyName + " " + idMapping.idType() + ", ");
             } else {
                 ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
                 if (columnMapping == null) {
                     continue;
                 }
-                queryString.append(columnMapping.columnName() + " " + columnMapping.columnType() + ", ");
+                queryString.append(field.getName() + " " + dataTypeMapper.getDbType(field.getType()) + ", ");
             }
         }
         queryString.append("PRIMARY KEY (" + primaryKeyName + ")");
         queryString.append(")");
-
-        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "password")) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(queryString.toString())) {
-                preparedStatement.execute();
-            } catch (SQLException e) {
-                LOGGER.error("Processing of the PreparedStatement went wrong. Try to check a generated query in the debugger.");
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Error with connecting to Database. Try to check the connection data that is given for DriverManager.getConnection().");
-        }
+        connectionManager.exectuteQuery(queryString);
     }
 
-    private static class EntityMappingNotFoundException extends RuntimeException {
-        public EntityMappingNotFoundException() {
-            super("Entity class must be annotated with @EntityMapping");
+    private static final class EntityMappingNotFoundException extends RuntimeException {
+
+        public EntityMappingNotFoundException(String message) {
+            super(message);
         }
     }
 }
-
