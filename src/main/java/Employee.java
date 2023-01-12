@@ -8,13 +8,13 @@ public class Employee {
     @IdMapping
     private int id;
 
-    @ColumnMapping()
+    @ColumnMapping
     private String name;
 
-    @ColumnMapping()
+    @ColumnMapping
     private String position;
 
-    @ColumnMapping()
+    @ColumnMapping
     private int salary;
 
     public Employee(int id, String name, String position, int salary) {

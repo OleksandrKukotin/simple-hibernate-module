@@ -38,7 +38,7 @@ public class MappingProcessor {
         }
         queryString.append("PRIMARY KEY (" + primaryKeyName + ")");
         queryString.append(")");
-        connectionManager.exectuteQuery(queryString);
+        connectionManager.executeQuery(queryString.toString());
     }
 
     private static final class EntityMappingNotFoundException extends RuntimeException {
