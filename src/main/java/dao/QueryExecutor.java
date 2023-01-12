@@ -1,6 +1,6 @@
-package annotations.processors;
+package dao;
 
-import annotations.exception.DatasourceException;
+import dao.exception.DatasourceException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

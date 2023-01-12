@@ -1,4 +1,4 @@
-package annotations.exception;
+package dao.exception;
 
 public final class DatasourceException extends RuntimeException {
 

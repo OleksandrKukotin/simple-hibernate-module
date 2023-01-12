@@ -1,6 +1,6 @@
-package annotations.processors;
+package dao;
 
-import annotations.exception.DatasourceException;
+import dao.exception.DatasourceException;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.io.IOException;

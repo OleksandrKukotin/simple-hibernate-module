@@ -1,6 +1,6 @@
-import annotations.processors.ConnectionProvider;
 import annotations.processors.MappingProcessor;
-import annotations.processors.QueryExecutor;
+import dao.ConnectionProvider;
+import dao.QueryExecutor;
 
 public class MainApplication {
 

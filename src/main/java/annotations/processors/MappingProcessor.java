@@ -3,6 +3,7 @@ package annotations.processors;
 import annotations.ColumnMapping;
 import annotations.EntityMapping;
 import annotations.IdMapping;
+import dao.QueryExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
