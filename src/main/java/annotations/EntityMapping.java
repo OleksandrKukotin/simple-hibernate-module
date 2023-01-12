@@ -8,5 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface EntityMapping {
-    String tableName() default "defaultTable";
+
+    String name() default "";
 }

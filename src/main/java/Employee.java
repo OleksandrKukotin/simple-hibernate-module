@@ -2,7 +2,7 @@ import annotations.ColumnMapping;
 import annotations.EntityMapping;
 import annotations.IdMapping;
 
-@EntityMapping(tableName = "Employees")
+@EntityMapping(name = "Employees")
 public class Employee {
 
     @IdMapping

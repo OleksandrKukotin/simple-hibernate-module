@@ -1,15 +1,15 @@
 package annotations.processors;
 
+import annotations.exception.DatasourceException;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class ConnectionManager {
+public class ConnectionProvider {
 
     private static final String APP_PROPERTIES_FILENAME = "app.properties";
     private static final String PG_DEFAULT_VALUE = "postgres";
@@ -17,7 +17,7 @@ public class ConnectionManager {
 
     private final Connection connection;
 
-    ConnectionManager() {
+    public ConnectionProvider() {
         try {
             this.connection = setupDatasource().getConnection();
         } catch (SQLException e) {
@@ -25,12 +25,8 @@ public class ConnectionManager {
         }
     }
 
-    public void executeQuery(String query) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new DatasourceException("Processing of the PreparedStatement went wrong", e);
-        }
+    public Connection getConnection() {
+        return connection;
     }
 
     private PGSimpleDataSource setupDatasource() {
@@ -51,13 +47,6 @@ public class ConnectionManager {
         dataSource.setDatabaseName(properties.getProperty("dataSource.databaseName", PG_DEFAULT_VALUE));
 
         return dataSource;
-    }
-
-    private static final class DatasourceException extends RuntimeException {
-
-        DatasourceException(String message, Exception exception) {
-            super(message, exception);
-        }
     }
 
     private static final class PropertiesFileNotExistsException extends RuntimeException {

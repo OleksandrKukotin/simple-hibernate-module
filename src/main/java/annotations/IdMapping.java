@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface IdMapping {
-    String idName() default "id";
-    String idType() default "serial";
+
+    String name() default "";
+    String type() default "SERIAL";
 }

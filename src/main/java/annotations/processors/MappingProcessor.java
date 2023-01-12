@@ -12,7 +12,12 @@ public class MappingProcessor {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MappingProcessor.class);
     private final DataTypeMapper dataTypeMapper = new DataTypeMapper();
-    private final ConnectionManager connectionManager = new ConnectionManager();
+
+    private final QueryExecutor queryExecutor;
+
+    public MappingProcessor(QueryExecutor queryExecutor) {
+        this.queryExecutor = queryExecutor;
+    }
 
     public void createTable(Class<?> entityClass) {
         EntityMapping entityMapping = entityClass.getAnnotation(EntityMapping.class);
@@ -21,13 +26,13 @@ public class MappingProcessor {
             throw new EntityMappingNotFoundException("Entity class must be annotated with @EntityMapping");
         }
         Field[] fields = entityClass.getDeclaredFields();
-        StringBuilder queryString = new StringBuilder("CREATE TABLE " + entityMapping.tableName() + " (");
+        StringBuilder queryString = new StringBuilder("CREATE TABLE " + entityMapping.name() + " (");
         String primaryKeyName = "";
         for (Field field : fields) {
             IdMapping idMapping = field.getAnnotation(IdMapping.class);
             if (idMapping != null) {
                 primaryKeyName = field.getName();
-                queryString.append(primaryKeyName + " " + idMapping.idType() + ", ");
+                queryString.append(primaryKeyName + " " + idMapping.type() + ", ");
             } else {
                 ColumnMapping columnMapping = field.getAnnotation(ColumnMapping.class);
                 if (columnMapping == null) {
@@ -38,7 +43,7 @@ public class MappingProcessor {
         }
         queryString.append("PRIMARY KEY (" + primaryKeyName + ")");
         queryString.append(")");
-        connectionManager.executeQuery(queryString.toString());
+        queryExecutor.execute(queryString.toString());
     }
 
     private static final class EntityMappingNotFoundException extends RuntimeException {
