@@ -11,7 +11,6 @@ import java.lang.reflect.Field;
 public class MappingProcessor {
 
     private final Logger LOGGER = LoggerFactory.getLogger(MappingProcessor.class);
-    private final DataTypeMapper dataTypeMapper = new DataTypeMapper();
 
     private final QueryExecutor queryExecutor;
 
@@ -38,7 +37,7 @@ public class MappingProcessor {
                 if (columnMapping == null) {
                     continue;
                 }
-                queryString.append(field.getName() + " " + dataTypeMapper.getDbType(field.getType()) + ", ");
+                queryString.append(field.getName() + " " + DataTypeMapper.getType(field.getType()) + ", ");
             }
         }
         queryString.append("PRIMARY KEY (" + primaryKeyName + ")");
