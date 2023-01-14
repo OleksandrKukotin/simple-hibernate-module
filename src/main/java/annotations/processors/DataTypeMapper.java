@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public enum DataTypeMapper {
 
-    STRING(String.class, "VARCHAR"),
+    STRING(String.class, "VARCHAR(255)"),
     INTEGER(Integer.class, "INTEGER"),
     LONG(Long.class, "BIGINT"),
     DOUBLE(Double.class, "DOUBLE PRECISION"),

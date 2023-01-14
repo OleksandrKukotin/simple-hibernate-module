@@ -6,7 +6,7 @@ import annotations.IdMapping;
 public class Employee {
 
     @IdMapping
-    private int id;
+    private Integer id;
 
     @ColumnMapping
     private String name;
@@ -15,14 +15,7 @@ public class Employee {
     private String position;
 
     @ColumnMapping
-    private int salary;
-
-    public Employee(int id, String name, String position, int salary) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.salary = salary;
-    }
+    private Integer salary;
 
     @Override
     public String toString() {
@@ -33,4 +26,6 @@ public class Employee {
             ", salary=" + salary +
             '}';
     }
+
+
 }

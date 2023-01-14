@@ -1,11 +1,11 @@
-import annotations.processors.MappingProcessor;
+import annotations.processors.EntityMappingProcessor;
 import dao.ConnectionProvider;
 import dao.QueryExecutor;
 
 public class MainApplication {
 
     public static void main(String[] args) {
-        new MappingProcessor(
+        new EntityMappingProcessor(
             new QueryExecutor(
                 new ConnectionProvider()
             )
