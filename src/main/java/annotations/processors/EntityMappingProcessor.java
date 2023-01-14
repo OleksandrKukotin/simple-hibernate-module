@@ -92,8 +92,8 @@ public class EntityMappingProcessor {
                 query.append(field.getName()).append(SPACE)
                     .append(DataTypeMapper.getType(field.getType()));
             } else {
-                query.append(setColumnName(columnMapping, field)).append(SPACE);
-                query.append(DataTypeMapper.getType(field.getType())).append(SPACE);
+                query.append(setColumnName(columnMapping, field)).append(SPACE)
+                    .append(DataTypeMapper.getType(field.getType())).append(SPACE);
             }
             query.append(COMA).append(SPACE);
         }
