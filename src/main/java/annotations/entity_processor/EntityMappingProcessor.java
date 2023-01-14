@@ -1,4 +1,4 @@
-package annotations.processors;
+package annotations.entity_processor;
 
 import annotations.ColumnMapping;
 import annotations.EntityMapping;
@@ -19,10 +19,12 @@ public class EntityMappingProcessor {
     private static final String SPACE = " ";
     private static final String COMA = ",";
     private static final String SEMICOLON = ";";
+    private static final String EMPTY_STRING = "";
     private static final String LEFT_BRACKET = "(";
     private static final String RIGHT_BRACKET = ")";
     private static final String CREATE_TABLE = "CREATE TABLE";
     private static final String PRIMARY_KEY_CONSTRAINT = "PRIMARY KEY";
+    private static final int REPLACEABLE_SYMBOLS_AMOUNT = 2;
     private static final int SINGLE_ID_MARKER = 1;
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityMappingProcessor.class);
 
@@ -40,6 +42,7 @@ public class EntityMappingProcessor {
         processEntityId(fields, query);
         processColumns(fields, query);
         buildFinalQueryPart(query);
+        cleanUp(query);
 
         queryExecutor.execute(query.toString());
     }
@@ -93,7 +96,7 @@ public class EntityMappingProcessor {
                     .append(DataTypeMapper.getType(field.getType()));
             } else {
                 query.append(setColumnName(columnMapping, field)).append(SPACE)
-                    .append(DataTypeMapper.getType(field.getType())).append(SPACE);
+                    .append(DataTypeMapper.getType(field.getType()));
             }
             query.append(COMA).append(SPACE);
         }
@@ -114,6 +117,12 @@ public class EntityMappingProcessor {
     // looks too useless, but I want to emphasize the idea
     private StringBuilder buildFinalQueryPart(StringBuilder query) {
         return query.append(RIGHT_BRACKET).append(SEMICOLON);
+    }
+
+    private StringBuilder cleanUp(StringBuilder query) {
+        int lastComaIndex = query.lastIndexOf(COMA);
+        query.replace(lastComaIndex, lastComaIndex + REPLACEABLE_SYMBOLS_AMOUNT, EMPTY_STRING);
+        return query;
     }
 
     private static final class EntityMappingNotFoundException extends RuntimeException {

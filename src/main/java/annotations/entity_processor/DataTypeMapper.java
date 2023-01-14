@@ -1,4 +1,4 @@
-package annotations.processors;
+package annotations.entity_processor;
 
 import java.util.Arrays;
 import java.util.Map;

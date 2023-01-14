@@ -1,4 +1,4 @@
-import annotations.processors.EntityMappingProcessor;
+import annotations.entity_processor.EntityMappingProcessor;
 import dao.ConnectionProvider;
 import dao.QueryExecutor;
 
