@@ -2,27 +2,20 @@ import annotations.ColumnMapping;
 import annotations.EntityMapping;
 import annotations.IdMapping;
 
-@EntityMapping(tableName = "Employees")
+@EntityMapping(name = "Employees")
 public class Employee {
 
     @IdMapping
-    private int id;
+    private Integer id;
 
-    @ColumnMapping()
+    @ColumnMapping
     private String name;
 
-    @ColumnMapping()
+    @ColumnMapping
     private String position;
 
-    @ColumnMapping()
-    private int salary;
-
-    public Employee(int id, String name, String position, int salary) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.salary = salary;
-    }
+    @ColumnMapping
+    private Integer salary;
 
     @Override
     public String toString() {
@@ -33,4 +26,6 @@ public class Employee {
             ", salary=" + salary +
             '}';
     }
+
+
 }

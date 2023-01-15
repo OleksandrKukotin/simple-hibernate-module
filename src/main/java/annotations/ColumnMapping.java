@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ColumnMapping {
-    String columnName() default "column";
-    String columnType() default "varchar(256)";
+
+    String name() default "";
 }
